@@ -1,0 +1,9 @@
+{
+  "name": "mud",
+  "versions": "0.1.0",
+  "description": "MUD built with NodeJS, React, and Socket.io",
+  "scripts": {
+    "startserver": "cd server && npm start",
+    "startclient": "cd client && npm start"
+  }
+}
