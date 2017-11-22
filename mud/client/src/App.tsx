@@ -5,7 +5,7 @@ import './App.css';
 class App extends React.Component {
   public state: any;
 
-  private socket: any;
+  private socket: SocketIOClient.Socket;
   private inputTextField: HTMLInputElement | null;
   private textLog: HTMLElement | null;
 
@@ -16,50 +16,47 @@ class App extends React.Component {
 
   public componentDidMount() {
     this.socket = io('http://localhost:3001');
-    if (this.socket) {
-
-    }
   }
 
   public render() {
     return (
       <div className="App">
-        <div
-          className="textLog"
-          ref={input => this.textLog = input}
-        >
-          {this.state.displayedText.map((line: string) =>
-            <div className="textDiv">
-              {line}
-            </div>
-          )}
+      <div
+        className="textLog"
+        ref={input => this.textLog = input}
+      >
+      {this.state.displayedText.map((line: string, index: number) =>
+        <div key={'displayText_' + index} className="textDiv">
+        {line}
         </div>
-        <form
-          name="input"
-          id="textForm"
-          onSubmit={(event) => { return this.handleSubmit(event); }}
-        >
-          <input
-            name="textInput"
-            type="text"
-            value={this.state.inputText}
-            id="textInput"
-            onChange={({target}: {target: HTMLInputElement}) => this.handleTextChange(target)}
-            ref={input => this.inputTextField = input}
-          />
-          <input
-            name="submitText"
-            type="submit"
-            id="submitText"
-            value="Send"
-          />
-        </form>
+      )}
+      </div>
+      <form
+        name="input"
+        id="textForm"
+        onSubmit={(event) => { return this.handleSubmit(event); }}
+      >
+      <input
+        name="textInput"
+        type="text"
+        value={this.state.inputText}
+        id="textInput"
+        onChange={({target}: {target: HTMLInputElement}) => this.handleTextChange(target)}
+        ref={input => this.inputTextField = input}
+      />
+      <input
+        name="submitText"
+        type="submit"
+        id="submitText"
+        value="Send"
+      />
+      </form>
       </div>
     );
   }
 
   private handleTextChange(target: HTMLInputElement): void {
-      this.setState({inputText: target.value});
+    this.setState({inputText: target.value});
   }
 
   private handleSubmit(event: any): boolean {
@@ -68,7 +65,11 @@ class App extends React.Component {
       return false;
     }
     this.addText(this.state.inputText);
+    this.socket.emit('command', this.state.inputText);
     this.resetInput();
+    
+
+    //return false to prevent event propogation
     return false;
   }
 
