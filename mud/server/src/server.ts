@@ -1,5 +1,5 @@
 import * as express from 'express';
-import Character from './Character';
+import {Character} from './Character';
 import {CharacterIndex, Game} from './Game';
 
 let app = require('express')();
@@ -11,8 +11,8 @@ class server {
   private game: Game;
 
   constructor() {
-    this.game = new Game(this.connectedCharacters);
     this.initializeSocket();
+    this.game = new Game(this.connectedCharacters, io);
 
     http.listen(3001, function() {
       console.log('listening on *:3001');
@@ -35,7 +35,7 @@ class server {
 
   private handleConnect(socket: SocketIO.Socket): void {
     console.log('a user connected ' + socket.id);
-    this.connectedCharacters[socket.id] = new Character();
+    this.connectedCharacters[socket.id] = new Character(socket);
   }
 
   private handleDisconnect(socket: SocketIO.Socket): void {
